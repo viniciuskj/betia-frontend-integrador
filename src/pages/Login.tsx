@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import Cookies from 'js-cookie';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useNavigate } from 'react-router-dom';
@@ -71,42 +70,39 @@ const Login = () => {
   };
 
   const handleSubmit = async e => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!validate()) {
-      return;
-    }
+  if (!validate()) {
+    return;
+  }
 
-    setIsLoading(true);
+  setIsLoading(true);
 
-    try {
-      // Mostrar apenas os dados do formulário inicialmente
-      console.log('Dados do formulário:', formData);
+  try {
+  //  console.log('Dados do formulário:', formData);
 
-      // Simular um delay de processamento
-      await new Promise(resolve => setTimeout(resolve, 1000));
+    const result = await login(formData.email, formData.password);
 
-      // Simular armazenamento de token (em produção, isso viria do backend)
-      Cookies.set('token', 'seu-token-aqui');
-
-      // Mostrar toast de sucesso
+    if (result.success) {
       toast.success(
         'Login realizado com sucesso! Redirecionando para o dashboard...'
       );
 
-      // Redirecionar para o dashboard após login simulado
+      // Redirecionar para o dashboard
       setTimeout(() => {
         navigate('/admin');
       }, 1000);
-    } catch (error) {
-      console.error('Erro ao fazer login:', error);
-      toast.error(
-        'Erro ao fazer login. Verifique suas credenciais e tente novamente.'
-      );
-    } finally {
-      setIsLoading(false);
+    } else {
+      toast.error(result.message || 'Erro ao fazer login. Verifique suas credenciais e tente novamente.');
     }
-  };
+
+  } catch (error) {
+    // console.error('Erro ao fazer login:', error);
+    toast.error('Erro inesperado. Tente novamente.');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <>

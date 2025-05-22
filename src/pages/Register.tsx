@@ -20,56 +20,105 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Check, Eye, EyeOff } from 'lucide-react';
+/* api */
+import register from '@/api/register';
+/* types */
+import type { ChangeEvent, FormEvent } from 'react';
+
+// Types
+interface Address {
+  street: string;
+  city: string;
+  state: string;
+  country: string;
+  zip_code: string;
+}
+
+interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+  address: Address;
+}
+
+interface FormDataStep1 {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface FormDataStep2 {
+  street: string;
+  city: string;
+  state: string;
+  country: string;
+  zip_code: string;
+}
+
+interface ErrorsStep1 {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface ErrorsStep2 {
+  street: string;
+  city: string;
+  state: string;
+  country: string;
+  zip_code: string;
+}
 
 const Register = () => {
-  const [step, setStep] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [step, setStep] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
   const navigate = useNavigate();
 
-  // Dados do formulário da etapa 1
-  const [formDataStep1, setFormDataStep1] = useState({
+  const [formDataStep1, setFormDataStep1] = useState<FormDataStep1>({
     name: '',
     email: '',
-    tipoConta: '',
-    tipoProducao: '',
-    terms: false,
-  });
-
-  // Erros do formulário da etapa 1
-  const [errorsStep1, setErrorsStep1] = useState({
-    name: '',
-    email: '',
-    tipoConta: '',
-    tipoProducao: '',
-    terms: '',
-  });
-
-  // Dados do formulário da etapa 2
-  const [formDataStep2, setFormDataStep2] = useState({
     password: '',
     confirmPassword: '',
   });
 
-  // Erros do formulário da etapa 2
-  const [errorsStep2, setErrorsStep2] = useState({
+  const [errorsStep1, setErrorsStep1] = useState<ErrorsStep1>({
+    name: '',
+    email: '',
     password: '',
     confirmPassword: '',
   });
 
-  // Manipuladores de alteração dos formulários
-  const handleChangeStep1 = e => {
-    const { name, value, type, checked } = e.target;
+  const [formDataStep2, setFormDataStep2] = useState<FormDataStep2>({
+    street: '',
+    city: '',
+    state: '',
+    country: 'Brasil',
+    zip_code: '',
+  });
+
+  const [errorsStep2, setErrorsStep2] = useState<ErrorsStep2>({
+    street: '',
+    city: '',
+    state: '',
+    country: '',
+    zip_code: '',
+  });
+
+  const handleChangeStep1 = (e: ChangeEvent<HTMLInputElement>): void => {
+    const { name, value } = e.target;
     setFormDataStep1({
       ...formDataStep1,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: value,
     });
   };
 
-  const handleChangeStep2 = e => {
+  const handleChangeStep2 = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     setFormDataStep2({
       ...formDataStep2,
@@ -77,34 +126,25 @@ const Register = () => {
     });
   };
 
-  // Manipulador de alteração para Select
-  const handleSelectChange = (name, value) => {
-    setFormDataStep1({
-      ...formDataStep1,
+  const handleSelectChange = (
+    name: keyof FormDataStep2,
+    value: string
+  ): void => {
+    setFormDataStep2({
+      ...formDataStep2,
       [name]: value,
     });
   };
 
-  // Manipulador de alteração para Checkbox
-  const handleCheckboxChange = checked => {
-    setFormDataStep1({
-      ...formDataStep1,
-      terms: checked,
-    });
-  };
-
-  // Validação da etapa 1
-  const validateStep1 = () => {
-    const errors = {
+  const validateStep1 = (): boolean => {
+    const errors: ErrorsStep1 = {
       name: '',
       email: '',
-      tipoConta: '',
-      tipoProducao: '',
-      terms: '',
+      password: '',
+      confirmPassword: '',
     };
     let isValid = true;
 
-    // Validação do nome
     if (!formDataStep1.name) {
       errors.name = 'Nome é obrigatório';
       isValid = false;
@@ -113,7 +153,6 @@ const Register = () => {
       isValid = false;
     }
 
-    // Validação do email
     if (!formDataStep1.email) {
       errors.email = 'E-mail é obrigatório';
       isValid = false;
@@ -125,21 +164,21 @@ const Register = () => {
       }
     }
 
-    // Validação do tipo de conta
-    if (!formDataStep1.tipoConta) {
-      errors.tipoConta = 'Tipo de conta é obrigatório';
+    // Validação da senha
+    if (!formDataStep1.password) {
+      errors.password = 'Senha é obrigatória';
+      isValid = false;
+    } else if (formDataStep1.password.length < 6) {
+      errors.password = 'A senha deve ter pelo menos 6 caracteres';
       isValid = false;
     }
 
-    // Validação do tipo de produção
-    if (!formDataStep1.tipoProducao) {
-      errors.tipoProducao = 'Tipo de produção é obrigatório';
+    // Validação da confirmação de senha
+    if (!formDataStep1.confirmPassword) {
+      errors.confirmPassword = 'Confirmação de senha é obrigatória';
       isValid = false;
-    }
-
-    // Validação dos termos
-    if (!formDataStep1.terms) {
-      errors.terms = 'Você precisa concordar com os Termos de Uso';
+    } else if (formDataStep1.password !== formDataStep1.confirmPassword) {
+      errors.confirmPassword = 'As senhas não coincidem';
       isValid = false;
     }
 
@@ -147,30 +186,45 @@ const Register = () => {
     return isValid;
   };
 
-  // Validação da etapa 2
-  const validateStep2 = () => {
-    const errors = {
-      password: '',
-      confirmPassword: '',
+  const validateStep2 = (): boolean => {
+    const errors: ErrorsStep2 = {
+      street: '',
+      city: '',
+      state: '',
+      country: '',
+      zip_code: '',
     };
     let isValid = true;
 
-    // Validação da senha
-    if (!formDataStep2.password) {
-      errors.password = 'Senha é obrigatória';
-      isValid = false;
-    } else if (formDataStep2.password.length < 6) {
-      errors.password = 'A senha deve ter pelo menos 6 caracteres';
+    if (!formDataStep2.street) {
+      errors.street = 'Endereço é obrigatório';
       isValid = false;
     }
 
-    // Validação da confirmação de senha
-    if (!formDataStep2.confirmPassword) {
-      errors.confirmPassword = 'Confirmação de senha é obrigatória';
+    if (!formDataStep2.city) {
+      errors.city = 'Cidade é obrigatória';
       isValid = false;
-    } else if (formDataStep2.password !== formDataStep2.confirmPassword) {
-      errors.confirmPassword = 'As senhas não coincidem';
+    }
+
+    if (!formDataStep2.state) {
+      errors.state = 'Estado é obrigatório';
       isValid = false;
+    }
+
+    if (!formDataStep2.country) {
+      errors.country = 'País é obrigatório';
+      isValid = false;
+    }
+
+    if (!formDataStep2.zip_code) {
+      errors.zip_code = 'CEP é obrigatório';
+      isValid = false;
+    } else {
+      const cepRegex = /^\d{5}-?\d{3}$/;
+      if (!cepRegex.test(formDataStep2.zip_code)) {
+        errors.zip_code = 'Formato de CEP inválido (ex: 12345-678)';
+        isValid = false;
+      }
     }
 
     setErrorsStep2(errors);
@@ -178,7 +232,7 @@ const Register = () => {
   };
 
   // Submissão da etapa 1
-  const handleSubmitStep1 = e => {
+  const handleSubmitStep1 = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
 
     if (validateStep1()) {
@@ -187,41 +241,74 @@ const Register = () => {
     }
   };
 
-  // Submissão da etapa 2
-  const handleSubmitStep2 = async e => {
+  // Submissão da etapa 2 (final)
+  const handleSubmitStep2 = async (
+    e: FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
 
     if (validateStep2()) {
       setIsLoading(true);
 
       try {
-        // Combinar dados das duas etapas
-        const formData = {
-          ...formDataStep1,
-          ...formDataStep2,
+        const userData: RegisterData = {
+          name: formDataStep1.name,
+          email: formDataStep1.email,
+          password: formDataStep1.password,
+          address: {
+            street: formDataStep2.street,
+            city: formDataStep2.city,
+            state: formDataStep2.state,
+            country: formDataStep2.country,
+            zip_code: formDataStep2.zip_code,
+          },
         };
 
-        // Mostrar apenas os dados do formulário inicialmente
-        console.log('Dados da etapa 2:', formData);
+        console.log('Dados completos para registro:', userData);
 
-        // Simular um delay de processamento
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        const result = await register(userData);
 
-        // Mostrar toast de sucesso
-        toast.success(
-          'Conta criada com sucesso! Redirecionando para o dashboard...'
-        );
+        if (result.success) {
+          toast.success(
+            'Conta criada com sucesso! Redirecionando para o dashboard...'
+          );
 
-        // Redirecionar após cadastro bem-sucedido
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 1000);
+          setTimeout(() => {
+            navigate('/admin');
+          }, 1000);
+        } else {
+          toast.error(
+            result.message || 'Erro ao criar conta. Por favor, tente novamente.'
+          );
+        }
       } catch (error) {
         console.error('Erro ao fazer cadastro:', error);
-        toast.error('Erro ao criar conta. Por favor, tente novamente.');
+        toast.error('Erro inesperado. Por favor, tente novamente.');
       } finally {
         setIsLoading(false);
       }
+    }
+  };
+
+  const getStepTitle = (): string => {
+    switch (step) {
+      case 1:
+        return 'Dados pessoais';
+      case 2:
+        return 'Endereço';
+      default:
+        return 'Crie sua conta gratuita';
+    }
+  };
+
+  const getStepDescription = (): string => {
+    switch (step) {
+      case 1:
+        return 'Preencha seus dados básicos e crie sua senha.';
+      case 2:
+        return 'Complete seu cadastro com seu endereço.';
+      default:
+        return 'Preencha os campos abaixo para começar a usar nossa plataforma.';
     }
   };
 
@@ -279,17 +366,26 @@ const Register = () => {
         <div className="w-full md:w-1/2 p-8 flex items-center justify-center">
           <Card className="w-full max-w-md">
             <CardHeader>
-              <CardTitle>Crie sua conta gratuita</CardTitle>
+              <CardTitle>{getStepTitle()}</CardTitle>
               <CardDescription>
-                Preencha os campos abaixo para começar a usar nossa plataforma.
-                Você terá acesso a todas as funcionalidades.
+                {getStepDescription()}
+                <div className="flex gap-2 mt-2">
+                  {[1, 2].map(stepNumber => (
+                    <div
+                      key={stepNumber}
+                      className={`h-2 w-full rounded-full ${
+                        step >= stepNumber ? 'bg-betia-green' : 'bg-gray-200'
+                      }`}
+                    />
+                  ))}
+                </div>
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {step === 1 ? (
+              {step === 1 && (
                 <form className="space-y-4" onSubmit={handleSubmitStep1}>
                   <div className="space-y-2">
-                    <Label htmlFor="name">Nome</Label>
+                    <Label htmlFor="name">Nome completo</Label>
                     <Input
                       id="name"
                       name="name"
@@ -322,98 +418,6 @@ const Register = () => {
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="tipo-conta">Tipo de conta</Label>
-                    <Select
-                      value={formDataStep1.tipoConta}
-                      onValueChange={value =>
-                        handleSelectChange('tipoConta', value)
-                      }
-                    >
-                      <SelectTrigger
-                        className={
-                          errorsStep1.tipoConta ? 'border-red-500' : ''
-                        }
-                        id="tipo-conta"
-                      >
-                        <SelectValue placeholder="Selecione o tipo de conta" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="produtor">Produtor Rural</SelectItem>
-                        <SelectItem value="tecnico">
-                          Técnico Agrícola
-                        </SelectItem>
-                        <SelectItem value="empresa">Empresa</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {errorsStep1.tipoConta && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errorsStep1.tipoConta}
-                      </p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="tipo-producao">Tipo de produção</Label>
-                    <Select
-                      value={formDataStep1.tipoProducao}
-                      onValueChange={value =>
-                        handleSelectChange('tipoProducao', value)
-                      }
-                    >
-                      <SelectTrigger
-                        className={
-                          errorsStep1.tipoProducao ? 'border-red-500' : ''
-                        }
-                        id="tipo-producao"
-                      >
-                        <SelectValue placeholder="Selecione o tipo de produção" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="graos">Grãos</SelectItem>
-                        <SelectItem value="hortalicas">Hortaliças</SelectItem>
-                        <SelectItem value="frutas">Frutas</SelectItem>
-                        <SelectItem value="pecuaria">Pecuária</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {errorsStep1.tipoProducao && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errorsStep1.tipoProducao}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="terms"
-                      checked={formDataStep1.terms}
-                      onCheckedChange={handleCheckboxChange}
-                    />
-                    <Label htmlFor="terms" className="text-sm font-normal">
-                      Concordo com os Termos de Uso
-                    </Label>
-                  </div>
-                  {errorsStep1.terms && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errorsStep1.terms}
-                    </p>
-                  )}
-                  <Button
-                    type="submit"
-                    className="w-full bg-betia-green hover:bg-betia-green/90"
-                  >
-                    Próximo
-                  </Button>
-                  <div className="text-center text-sm">
-                    Já tem uma conta?{' '}
-                    <a
-                      href="/login"
-                      className="text-betia-green hover:underline"
-                    >
-                      Entrar
-                    </a>
-                  </div>
-                </form>
-              ) : (
-                <form className="space-y-4" onSubmit={handleSubmitStep2}>
-                  <div className="space-y-2">
                     <Label htmlFor="password">Senha</Label>
                     <div className="relative">
                       <Input
@@ -421,10 +425,10 @@ const Register = () => {
                         name="password"
                         type={showPassword ? 'text' : 'password'}
                         placeholder="Digite sua senha"
-                        value={formDataStep2.password}
-                        onChange={handleChangeStep2}
+                        value={formDataStep1.password}
+                        onChange={handleChangeStep1}
                         className={
-                          errorsStep2.password
+                          errorsStep1.password
                             ? 'border-red-500 pr-10'
                             : 'pr-10'
                         }
@@ -441,24 +445,24 @@ const Register = () => {
                         )}
                       </button>
                     </div>
-                    {errorsStep2.password && (
+                    {errorsStep1.password && (
                       <p className="text-red-500 text-sm mt-1">
-                        {errorsStep2.password}
+                        {errorsStep1.password}
                       </p>
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="confirm-password">Confirme sua senha</Label>
+                    <Label htmlFor="confirmPassword">Confirme sua senha</Label>
                     <div className="relative">
                       <Input
-                        id="confirm-password"
+                        id="confirmPassword"
                         name="confirmPassword"
                         type={showConfirmPassword ? 'text' : 'password'}
                         placeholder="Confirme sua senha"
-                        value={formDataStep2.confirmPassword}
-                        onChange={handleChangeStep2}
+                        value={formDataStep1.confirmPassword}
+                        onChange={handleChangeStep1}
                         className={
-                          errorsStep2.confirmPassword
+                          errorsStep1.confirmPassword
                             ? 'border-red-500 pr-10'
                             : 'pr-10'
                         }
@@ -477,11 +481,163 @@ const Register = () => {
                         )}
                       </button>
                     </div>
-                    {errorsStep2.confirmPassword && (
+                    {errorsStep1.confirmPassword && (
                       <p className="text-red-500 text-sm mt-1">
-                        {errorsStep2.confirmPassword}
+                        {errorsStep1.confirmPassword}
                       </p>
                     )}
+                  </div>
+                  <Button
+                    type="submit"
+                    className="w-full bg-betia-green hover:bg-betia-green/90"
+                  >
+                    Próximo
+                  </Button>
+                  <div className="text-center text-sm">
+                    Já tem uma conta?{' '}
+                    <a
+                      href="/login"
+                      className="text-betia-green hover:underline"
+                    >
+                      Entrar
+                    </a>
+                  </div>
+                </form>
+              )}
+
+              {step === 2 && (
+                <form className="space-y-4" onSubmit={handleSubmitStep2}>
+                  <div className="space-y-2">
+                    <Label htmlFor="street">Endereço</Label>
+                    <Input
+                      id="street"
+                      name="street"
+                      placeholder="Rua, número, complemento"
+                      value={formDataStep2.street}
+                      onChange={handleChangeStep2}
+                      className={errorsStep2.street ? 'border-red-500' : ''}
+                    />
+                    {errorsStep2.street && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errorsStep2.street}
+                      </p>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="city">Cidade</Label>
+                      <Input
+                        id="city"
+                        name="city"
+                        placeholder="Sua cidade"
+                        value={formDataStep2.city}
+                        onChange={handleChangeStep2}
+                        className={errorsStep2.city ? 'border-red-500' : ''}
+                      />
+                      {errorsStep2.city && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errorsStep2.city}
+                        </p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="state">Estado</Label>
+                      <Select
+                        value={formDataStep2.state}
+                        onValueChange={value =>
+                          handleSelectChange('state', value)
+                        }
+                      >
+                        <SelectTrigger
+                          className={errorsStep2.state ? 'border-red-500' : ''}
+                          id="state"
+                        >
+                          <SelectValue placeholder="UF" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="AC">AC</SelectItem>
+                          <SelectItem value="AL">AL</SelectItem>
+                          <SelectItem value="AP">AP</SelectItem>
+                          <SelectItem value="AM">AM</SelectItem>
+                          <SelectItem value="BA">BA</SelectItem>
+                          <SelectItem value="CE">CE</SelectItem>
+                          <SelectItem value="DF">DF</SelectItem>
+                          <SelectItem value="ES">ES</SelectItem>
+                          <SelectItem value="GO">GO</SelectItem>
+                          <SelectItem value="MA">MA</SelectItem>
+                          <SelectItem value="MT">MT</SelectItem>
+                          <SelectItem value="MS">MS</SelectItem>
+                          <SelectItem value="MG">MG</SelectItem>
+                          <SelectItem value="PA">PA</SelectItem>
+                          <SelectItem value="PB">PB</SelectItem>
+                          <SelectItem value="PR">PR</SelectItem>
+                          <SelectItem value="PE">PE</SelectItem>
+                          <SelectItem value="PI">PI</SelectItem>
+                          <SelectItem value="RJ">RJ</SelectItem>
+                          <SelectItem value="RN">RN</SelectItem>
+                          <SelectItem value="RS">RS</SelectItem>
+                          <SelectItem value="RO">RO</SelectItem>
+                          <SelectItem value="RR">RR</SelectItem>
+                          <SelectItem value="SC">SC</SelectItem>
+                          <SelectItem value="SP">SP</SelectItem>
+                          <SelectItem value="SE">SE</SelectItem>
+                          <SelectItem value="TO">TO</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {errorsStep2.state && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errorsStep2.state}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="zip_code">CEP</Label>
+                      <Input
+                        id="zip_code"
+                        name="zip_code"
+                        placeholder="00000-000"
+                        value={formDataStep2.zip_code}
+                        onChange={handleChangeStep2}
+                        className={errorsStep2.zip_code ? 'border-red-500' : ''}
+                      />
+                      {errorsStep2.zip_code && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errorsStep2.zip_code}
+                        </p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="country">País</Label>
+                      <Select
+                        value={formDataStep2.country}
+                        onValueChange={value =>
+                          handleSelectChange('country', value)
+                        }
+                      >
+                        <SelectTrigger
+                          className={
+                            errorsStep2.country ? 'border-red-500' : ''
+                          }
+                          id="country"
+                        >
+                          <SelectValue placeholder="Selecione o país" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Brasil">Brasil</SelectItem>
+                          <SelectItem value="Argentina">Argentina</SelectItem>
+                          <SelectItem value="Chile">Chile</SelectItem>
+                          <SelectItem value="Uruguai">Uruguai</SelectItem>
+                          <SelectItem value="Paraguai">Paraguai</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {errorsStep2.country && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errorsStep2.country}
+                        </p>
+                      )}
+                    </div>
                   </div>
                   <Button
                     type="submit"
@@ -491,12 +647,10 @@ const Register = () => {
                     {isLoading ? 'Criando conta...' : 'Criar conta'}
                   </Button>
                   <Button
+                    type="button"
                     variant="outline"
                     className="w-full"
-                    onClick={e => {
-                      e.preventDefault();
-                      setStep(1);
-                    }}
+                    onClick={() => setStep(1)}
                     disabled={isLoading}
                   >
                     Voltar

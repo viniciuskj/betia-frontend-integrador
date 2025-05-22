@@ -12,7 +12,7 @@ const TOKEN_EXPIRES_IN = 1; // dias ate expirar
 
 const login = async (email, password) => {
   try {
-    const response = await api.post('/auth/login', { email, password });
+    const response = await api.post('/login', { email, password });
 
     if (response.data && response.data.token) {
       Cookies.set('token', response.data.token, {

@@ -7,6 +7,10 @@ import MyCulturesTab from '@/components/dashboard/tabs/MyCulturesTab';
 import ClimateTab from '@/components/dashboard/tabs/ClimateTab';
 import ReportsTab from '@/components/dashboard/tabs/ReportsTab';
 import MobileNav from '@/components/dashboard/MobileNav';
+//api
+import getHarvests from '@/api/getHarvests'
+
+
 /* types */
 import type { Crop, CultureForecast } from '@/types';
 /* dados temporarios onde voce pode se basear para fazer a api */
@@ -28,6 +32,15 @@ const Dashboard = () => {
   );
 
   useEffect(() => {
+    try {
+      const result = getHarvests()
+
+      console.log(result)
+
+      setCrops(result)
+    } catch (error) {
+      console.log(error)
+    }
     /* fazer chamadas da api aqui para assim que abrir a tela admin primeira vez pegar os dados e setar dentro dos states */
     setForecastsByCulture(forecastByCultureData);
     console.log('abri tela de login');
