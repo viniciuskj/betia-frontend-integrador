@@ -39,7 +39,7 @@ export default function MobileNav({
       icon: BarChart,
     },
     {
-      name: 'Minhas Culturas',
+      name: 'Minhas Safras',
       id: 'culturas',
       icon: Leaf,
     },

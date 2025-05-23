@@ -1,5 +1,4 @@
 import type React from 'react';
-
 import { useState } from 'react';
 import {
   Dialog,
@@ -14,15 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { PlusCircle, FileText, Trash2, Leaf } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { PlusCircle, Trash2, Leaf } from 'lucide-react';
 
 interface MyCulturesTabProps {
   crops: any[];
@@ -32,14 +23,10 @@ interface MyCulturesTabProps {
 
 const MyCulturesTab = ({ crops, addCrop, removeCrop }: MyCulturesTabProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
-
-  // Estado para o formulário
   const [newCrop, setNewCrop] = useState({
     name: '',
     culture: '',
     plantingDate: '',
-    area: '',
-    location: '',
   });
 
   const [isAnalyzing, setIsAnalyzing] = useState<string | null>(null);
@@ -51,25 +38,22 @@ const MyCulturesTab = ({ crops, addCrop, removeCrop }: MyCulturesTabProps) => {
     setNewCrop(prev => ({ ...prev, [id]: value }));
   };
 
-  const handlecultureChange = (value: string) => {
-    setNewCrop(prev => ({ ...prev, culture: value }));
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    addCrop({
+    const cropData = {
       id: Date.now().toString(),
       ...newCrop,
       status: 'Em desenvolvimento',
-    });
+    };
+
+    addCrop(cropData);
+    console.log('Nova safra cadastrada:', cropData);
 
     setNewCrop({
       name: '',
       culture: '',
       plantingDate: '',
-      area: '',
-      location: '',
     });
 
     setDialogOpen(false);
@@ -84,7 +68,6 @@ const MyCulturesTab = ({ crops, addCrop, removeCrop }: MyCulturesTabProps) => {
       setAnalysisError(null);
       setIsAnalyzing(safraId);
 
-      // Encontrar a safra pelo ID
       const safraToAnalyze = crops.find(s => s.id === safraId);
 
       if (!safraToAnalyze) {
@@ -150,83 +133,38 @@ const MyCulturesTab = ({ crops, addCrop, removeCrop }: MyCulturesTabProps) => {
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    name
-                  </Label>
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="name">Nome</Label>
                   <Input
                     id="name"
-                    placeholder="name da safra"
-                    className="col-span-3"
+                    placeholder="Nome da safra"
                     value={newCrop.name}
                     onChange={handleInputChange}
                     required
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="culture" className="text-right">
-                    culture
-                  </Label>
-                  <div className="col-span-3">
-                    <Select
-                      value={newCrop.culture}
-                      onValueChange={handlecultureChange}
-                      required
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione a culture" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Soja">Soja</SelectItem>
-                        <SelectItem value="Milho">Milho</SelectItem>
-                        <SelectItem value="Algodão">Algodão</SelectItem>
-                        <SelectItem value="Café">Café</SelectItem>
-                        <SelectItem value="Trigo">Trigo</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="culture">Cultura</Label>
+                  <Input
+                    id="culture"
+                    placeholder="Nome da cultura"
+                    value={newCrop.culture}
+                    onChange={handleInputChange}
+                    required
+                  />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="plantingDate" className="text-right">
-                    Data de Plantio
-                  </Label>
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="plantingDate">Data de Plantio</Label>
                   <Input
                     id="plantingDate"
                     type="date"
-                    className="col-span-3"
                     value={newCrop.plantingDate}
                     onChange={handleInputChange}
                     required
                   />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="area" className="text-right">
-                    Área (ha)
-                  </Label>
-                  <Input
-                    id="area"
-                    type="text"
-                    placeholder="0.0"
-                    className="col-span-3"
-                    value={newCrop.area}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="location" className="text-right">
-                    Localização
-                  </Label>
-                  <Input
-                    id="location"
-                    placeholder="name da fazenda/área"
-                    className="col-span-3"
-                    value={newCrop.location}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
               </div>
+
               <DialogFooter>
                 <Button
                   type="submit"

@@ -48,7 +48,7 @@ export default function DashboardHome({
             size="sm"
           >
             <Leaf className="h-4 w-4 mr-2" />
-            Nova Cultura
+            Cadastrar Nova Safra
           </Button>
         </div>
       </div>

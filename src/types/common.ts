@@ -12,6 +12,9 @@ export type UserData = {
   created_at: string;
   updated_at: string;
   subscription: {
+    id: number;
+    user_id: number;
+    plan: number;
     start_date: string;
   };
 };

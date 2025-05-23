@@ -27,7 +27,7 @@ export default function DashboardSidebar({
       icon: BarChart,
     },
     {
-      name: 'Minhas Culturas',
+      name: 'Minhas Safras',
       id: 'culturas',
       icon: Leaf,
     },
