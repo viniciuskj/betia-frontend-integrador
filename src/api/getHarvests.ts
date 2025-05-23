@@ -1,12 +1,15 @@
 import api from './api';
+import Cookies from 'js-cookie';
 
 /**
 // Realiza um get
  * @returns {Promise} - Retorna os dados do usuário em caso de sucesso
  */
 
-const getHarvests = async (id: number) => {
+const getHarvests = async () => {
   try {
+    const id = Cookies.get('userId');
+
     const response = await api.get(`/users/${id}/harvests`);
 
     return {

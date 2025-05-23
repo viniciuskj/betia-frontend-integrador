@@ -15,9 +15,13 @@ const login = async (email: string, password: string) => {
     const response = await api.post('/login', { email, password });
 
     if (response.data && response.data.token) {
-      Cookies.set('token', response.data.token, {
-        expires: TOKEN_EXPIRES_IN,
-      });
+      Cookies.set('token', response.data.token, { expires: TOKEN_EXPIRES_IN });
+
+      if (response.data.user_id) {
+        Cookies.set('userId', response.data.user_id.toString(), {
+          expires: TOKEN_EXPIRES_IN,
+        });
+      }
     }
 
     return {

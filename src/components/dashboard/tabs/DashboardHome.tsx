@@ -9,10 +9,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Leaf } from 'lucide-react';
 /* types */
-import type { Crop, Diagnostic, UserData, Harvest } from '@/types';
+import type { Diagnostic, UserData, Harvest } from '@/types';
 
 interface DashboardHomeProps {
-  crops: Crop[];
   setSelectedTab: (tab: string) => void;
   latestDiagnostics: Diagnostic[];
   userData: UserData | null;
@@ -20,7 +19,6 @@ interface DashboardHomeProps {
 }
 
 export default function DashboardHome({
-  crops,
   setSelectedTab,
   latestDiagnostics,
   userData,
@@ -61,10 +59,7 @@ export default function DashboardHome({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{harvests.length}</div>
-            <p className="text-xs text-muted-foreground">
-              +{crops.length - 1} no último mês
-            </p>
+            <div className="text-2xl font-bold">{harvests?.length || 0}</div>
           </CardContent>
         </Card>
         {/* <Card>
@@ -95,7 +90,7 @@ export default function DashboardHome({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {harvests.length > 0 ? (
+              {harvests?.length > 0 ? (
                 <div className="space-y-4">
                   {harvests.map(harvest => (
                     <div

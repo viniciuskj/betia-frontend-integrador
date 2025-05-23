@@ -1,23 +1,15 @@
 import api from './api';
 import type { AxiosError } from 'axios';
-import Cookies from 'js-cookie';
 
-const getUserById = async () => {
+const getPlans = async () => {
   try {
-    const id = Cookies.get('userId');
-
-    if (!id) {
-      throw new Error('User ID not found in cookies');
-    }
-
-    const response = await api.get(`/users/${id}`);
+    const response = await api.get(`/subscription/plans`);
 
     return {
       success: true,
       data: response.data,
     };
   } catch (error) {
-    // console.error('Erro ao fazer login:', error);
     const err = error as AxiosError<{ message?: string }>;
 
     return {
@@ -28,4 +20,4 @@ const getUserById = async () => {
   }
 };
 
-export default getUserById;
+export default getPlans;

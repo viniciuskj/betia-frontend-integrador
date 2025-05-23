@@ -14,14 +14,21 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { PlusCircle, Trash2, Leaf } from 'lucide-react';
+import type { Harvest } from '@/types';
+import { formatDate } from '@/utils/formatDate';
 
 interface MyCulturesTabProps {
-  crops: any[];
   addCrop: (crop: any) => void;
-  removeCrop: (cropId: string) => void;
+  handleDeleteHarvest: (cropId: number) => void;
+  harvests: Harvest[];
 }
 
-const MyCulturesTab = ({ crops, addCrop, removeCrop }: MyCulturesTabProps) => {
+const MyCulturesTab = ({
+  harvests,
+  addCrop,
+  handleDeleteHarvest,
+}: MyCulturesTabProps) => {
+  console.log('SOU EU ', harvests);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [newCrop, setNewCrop] = useState({
     name: '',
@@ -29,7 +36,7 @@ const MyCulturesTab = ({ crops, addCrop, removeCrop }: MyCulturesTabProps) => {
     plantingDate: '',
   });
 
-  const [isAnalyzing, setIsAnalyzing] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState<number | null>(null);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
 
@@ -59,57 +66,18 @@ const MyCulturesTab = ({ crops, addCrop, removeCrop }: MyCulturesTabProps) => {
     setDialogOpen(false);
   };
 
-  // Função para analisar uma safra com IA
-  const handleAnalyzeWithAI = async (safraId: string) => {
+  const handleAnalyzeWithAI = async (safraId: number) => {
     try {
       console.log('Analisando safra com IA...', safraId);
-      // Resetar estados anteriores
       setAnalysisResult(null);
       setAnalysisError(null);
       setIsAnalyzing(safraId);
-
-      const safraToAnalyze = crops.find(s => s.id === safraId);
-
-      if (!safraToAnalyze) {
-        throw new Error('Safra não encontrada');
-      }
-
-      // Exemplo de chamada à API - substitua pela URL real da sua API
-      const response = await fetch('/api/analyze-crop', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          safraId: safraId,
-          culture: safraToAnalyze.culture,
-          location: safraToAnalyze.location,
-          plantingDate: safraToAnalyze.plantingDate,
-          area: safraToAnalyze.area,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erro na API: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setAnalysisResult(data);
-
-      // Exibir resultado em um toast ou modal
-      alert(
-        `Análise concluída para ${safraToAnalyze.name}. Status: ${
-          data.status || 'Concluído'
-        }`
-      );
     } catch (error) {
       console.error('Erro ao analisar safra:', error);
       setAnalysisError(
         error instanceof Error ? error.message : 'Erro desconhecido'
       );
       alert('Erro ao realizar análise. Por favor, tente novamente.');
-    } finally {
-      setIsAnalyzing(null);
     }
   };
 
@@ -179,27 +147,27 @@ const MyCulturesTab = ({ crops, addCrop, removeCrop }: MyCulturesTabProps) => {
       </div>
 
       <div className="space-y-4">
-        {crops.map(crop => (
-          <Card key={crop.id}>
+        {harvests?.map(harvest => (
+          <Card key={harvest.id}>
             <CardContent className="p-6">
               <div className="flex flex-col md:flex-row justify-between">
                 <div className="space-y-2">
-                  <h2 className="text-xl font-bold">{crop.name}</h2>
+                  <h2 className="text-xl font-bold">{harvest.title}</h2>
                   <div className="text-sm text-muted-foreground">
                     <p>
-                      {crop.culture} | {crop.plantingDate}
+                      {harvest.culture_type} | {formatDate(harvest.created_at)}
                     </p>
-                    <p>{crop.location}</p>
+                    <p>Localização aqui</p>
                   </div>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2 mt-4">
                 <Button
                   className="bg-betia-green hover:bg-betia-green/90"
-                  onClick={() => handleAnalyzeWithAI(crop.id)}
-                  disabled={isAnalyzing === crop.id}
+                  onClick={() => handleAnalyzeWithAI(harvest.id)}
+                  disabled={isAnalyzing === harvest.id}
                 >
-                  {isAnalyzing === crop.id ? (
+                  {isAnalyzing === harvest.id ? (
                     <>Analisando...</>
                   ) : (
                     <>
@@ -207,13 +175,13 @@ const MyCulturesTab = ({ crops, addCrop, removeCrop }: MyCulturesTabProps) => {
                     </>
                   )}
                 </Button>
-                {analysisResult && analysisResult.safraId === crop.id && (
+                {analysisResult && analysisResult.safraId === harvest.id && (
                   <div className="mt-2 text-sm text-green-600">
                     Última análise: {new Date().toLocaleString()} -{' '}
                     {analysisResult.status || 'Concluída'}
                   </div>
                 )}
-                {analysisError && isAnalyzing === crop.id && (
+                {analysisError && isAnalyzing === harvest.id && (
                   <div className="mt-2 text-sm text-red-600">
                     Erro: {analysisError}
                   </div>
@@ -221,7 +189,7 @@ const MyCulturesTab = ({ crops, addCrop, removeCrop }: MyCulturesTabProps) => {
                 <Button
                   variant="outline"
                   className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                  onClick={() => removeCrop(crop.id)}
+                  onClick={() => handleDeleteHarvest(harvest.id)}
                 >
                   <Trash2 className="mr-2 h-4 w-4" /> Excluir Safra
                 </Button>
@@ -230,14 +198,15 @@ const MyCulturesTab = ({ crops, addCrop, removeCrop }: MyCulturesTabProps) => {
           </Card>
         ))}
 
-        {crops.length === 0 && (
-          <div className="text-center py-12 border rounded-lg">
-            <p className="text-muted-foreground">Nenhuma safra cadastrada.</p>
-            <p className="text-muted-foreground mt-2">
-              Clique em "Cadastrar Nova Safra" para começar.
-            </p>
-          </div>
-        )}
+        {harvests?.length === 0 ||
+          (harvests === null && (
+            <div className="text-center py-12 border rounded-lg">
+              <p className="text-muted-foreground">Nenhuma safra cadastrada.</p>
+              <p className="text-muted-foreground mt-2">
+                Clique em "Cadastrar Nova Safra" para começar.
+              </p>
+            </div>
+          ))}
       </div>
     </div>
   );

@@ -88,7 +88,6 @@ const Login = () => {
           'Login realizado com sucesso! Redirecionando para o dashboard...'
         );
 
-        // Redirecionar para o dashboard
         setTimeout(() => {
           navigate('/admin');
         }, 1000);

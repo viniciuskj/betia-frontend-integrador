@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
 import DashboardHome from '@/components/dashboard/tabs/DashboardHome';
 import DiagnosticTab from '@/components/dashboard/tabs/DiagnosticTab';
@@ -7,9 +8,11 @@ import MyCulturesTab from '@/components/dashboard/tabs/MyCulturesTab';
 import ClimateTab from '@/components/dashboard/tabs/ClimateTab';
 import ReportsTab from '@/components/dashboard/tabs/ReportsTab';
 import MobileNav from '@/components/dashboard/MobileNav';
+
 //api
 import getHarvests from '@/api/getHarvests';
-import getUserData from '@/api/getUserData';
+import getUserById from '@/api/getUserById';
+import deleteHarvest from '@/api/deleteHarvest';
 
 /* types */
 import type { Crop, CultureForecast, UserData, Harvest } from '@/types';
@@ -36,17 +39,15 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userResult: any = await getUserData();
+        const userResult: any = await getUserById();
         console.log('User data:', userResult);
 
-        // userResult.data é um array, então pega o primeiro item
-        const user = userResult.data?.[0];
+        const user = userResult.data;
 
         if (user) {
-          setUserData(user); // Seta o primeiro usuário do array
+          setUserData(user);
 
-          // Usa o user diretamente (não userData que ainda não foi setado)
-          const harvestsResult = await getHarvests(user.id);
+          const harvestsResult = await getHarvests();
           console.log('Harvests data:', harvestsResult);
           setHarvests(harvestsResult.data);
         } else {
@@ -54,7 +55,6 @@ const Dashboard = () => {
         }
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
-        // toast.error('Erro ao carregar dados');
       }
     };
 
@@ -66,8 +66,16 @@ const Dashboard = () => {
     setCrops([...crops, { ...newCrop, id }]);
   };
 
-  const removeCrop = (id: string) => {
-    setCrops(crops.filter(crop => crop.id !== id));
+  const handleDeleteHarvest = async (id: number) => {
+    const result = await deleteHarvest(id);
+
+    if (result.success) {
+      setHarvests(prev => prev.filter(h => h.id !== id));
+      toast.success('Safra deletada com sucesso.');
+    } else {
+      // alert(result.message || 'Erro ao deletar safra.');
+      toast.error(result.message || 'Erro ao deletar safra.');
+    }
   };
 
   const renderContent = () => {
@@ -75,9 +83,9 @@ const Dashboard = () => {
       case 'culturas':
         return (
           <MyCulturesTab
-            crops={crops}
+            harvests={harvests}
             addCrop={addCrop}
-            removeCrop={removeCrop}
+            handleDeleteHarvest={handleDeleteHarvest}
           />
         );
       case 'diagnostico':
@@ -106,13 +114,12 @@ const Dashboard = () => {
           />
         );
       case 'planos':
-        return <PlansTab />;
+        return <PlansTab userData={userData} setUserData={setUserData} />;
       case 'dashboard':
       default:
         return (
           <DashboardHome
             harvests={harvests}
-            crops={crops}
             userData={userData}
             setSelectedTab={setSelectedTab}
             latestDiagnostics={diagnosticsData}

@@ -230,3 +230,11 @@ export type Harvest = {
   created_at: string;
   updated_at: string;
 };
+
+/* plans type */
+export type PlansData = {
+  id: number;
+  type: 'free' | 'monthly' | 'yearly';
+  price?: number;
+  duration?: number;
+};
