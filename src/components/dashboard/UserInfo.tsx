@@ -1,32 +1,26 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 import Cookies from 'js-cookie';
+/* type */
+import type { UserData } from '@/types';
 
-export function UserInfo() {
-  const [user, setUser] = useState(null);
+interface UserInfoProps {
+  userData: UserData | null;
+}
+
+export function UserInfo({ userData }: UserInfoProps) {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
-        const userData = JSON.parse(userStr);
-        setUser(userData);
-      } catch (e) {
-        console.error('Erro ao carregar dados do usuário:', e);
-      }
-    }
-  }, []);
+  console.log('User Data:123', userData);
 
   const handleLogout = () => {
     Cookies.remove('token');
     navigate('/login');
   };
 
-  if (!user) {
+  if (!userData) {
     return null;
   }
 
@@ -35,14 +29,16 @@ export function UserInfo() {
       <div className="flex items-center gap-3">
         <Avatar>
           <AvatarFallback className="bg-white/20 text-white">
-            {user?.name?.charAt(0) || 'U'}
+            {userData?.name?.charAt(0) || 'U'}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-white truncate">
-            {user?.name || 'Usuário'}
+            {userData?.name || 'Usuário'}
           </p>
-          <p className="text-xs text-white/70 truncate">{user?.email || ''}</p>
+          <p className="text-xs text-white/70 truncate">
+            {userData?.email || ''}
+          </p>
         </div>
         <Button
           variant="ghost"

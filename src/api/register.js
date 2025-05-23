@@ -1,4 +1,4 @@
-import api from './axios';
+import api from './api';
 import Cookies from 'js-cookie';
 
 const TOKEN_EXPIRES_IN = 1; // days

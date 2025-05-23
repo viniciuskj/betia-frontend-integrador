@@ -12,15 +12,19 @@ import {
   Home,
   CreditCard,
 } from 'lucide-react';
+/* type */
+import type { UserData } from '@/types';
 
 interface MobileNavProps {
   selectedTab: string;
   setSelectedTab: (tab: string) => void;
+  userData: UserData | null;
 }
 
 export default function MobileNav({
   selectedTab,
   setSelectedTab,
+  userData,
 }: MobileNavProps) {
   const [open, setOpen] = useState(false);
 
@@ -109,7 +113,7 @@ export default function MobileNav({
           </div>
 
           <div className="mt-auto">
-            <UserInfo />
+            <UserInfo userData={userData} />
           </div>
         </SheetContent>
       </Sheet>

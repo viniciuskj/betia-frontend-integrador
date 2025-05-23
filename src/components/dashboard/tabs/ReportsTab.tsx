@@ -313,7 +313,6 @@ export default function ReportsPage({
             <Tabs defaultValue="details">
               <TabsList className="mb-4">
                 <TabsTrigger value="details">Detalhes da Análise</TabsTrigger>
-                <TabsTrigger value="images">Imagens</TabsTrigger>
                 <TabsTrigger value="history">Histórico da Cultura</TabsTrigger>
               </TabsList>
 
@@ -372,61 +371,6 @@ export default function ReportsPage({
                     </CardContent>
                   </Card>
                 </div>
-              </TabsContent>
-
-              <TabsContent value="images">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Imagens Analisadas</CardTitle>
-                    <CardDescription>
-                      Imagens utilizadas para o diagnóstico
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {currentAnalysis.images &&
-                      currentAnalysis.images.length > 0 ? (
-                        currentAnalysis.images.map((image, index) => (
-                          <div
-                            key={index}
-                            className="border rounded-lg overflow-hidden"
-                          >
-                            <div className="aspect-video bg-muted flex items-center justify-center">
-                              <img
-                                src={image.src}
-                                alt={`Image ${index + 1}`}
-                                className="object-cover"
-                              />
-                            </div>
-                            <div className="p-3">
-                              <h4 className="text-sm font-medium">
-                                {image.title || `Image ${index + 1}`}
-                              </h4>
-                              <p className="text-xs text-muted-foreground">
-                                Capturada em{' '}
-                                {image.date || currentAnalysis.date}
-                              </p>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="col-span-3 text-center p-8">
-                          <p className="text-muted-foreground">
-                            Nenhuma imagem disponível.
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                  {currentAnalysis.images &&
-                    currentAnalysis.images.length > 0 && (
-                      <CardFooter>
-                        <Button variant="outline" className="w-full">
-                          Ver todas as imagens
-                        </Button>
-                      </CardFooter>
-                    )}
-                </Card>
               </TabsContent>
 
               <TabsContent value="history">

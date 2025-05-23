@@ -130,11 +130,6 @@ const MyCulturesTab = ({ crops, addCrop, removeCrop }: MyCulturesTabProps) => {
     }
   };
 
-  /* função para ver analises */
-  const handleViewReviews = (safraId: string) => {
-    console.log('Visualizando reviews para safra:', safraId);
-  };
-
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-8">
@@ -259,20 +254,6 @@ const MyCulturesTab = ({ crops, addCrop, removeCrop }: MyCulturesTabProps) => {
                     <p>{crop.location}</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2 mt-4 md:mt-0">
-                  <Badge
-                    variant="outline"
-                    className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
-                  >
-                    Análise Pendente
-                  </Badge>
-                  <Badge
-                    variant="outline"
-                    className="bg-green-100 text-green-800 hover:bg-green-100"
-                  >
-                    {crop.status}
-                  </Badge>
-                </div>
               </div>
               <div className="flex flex-wrap gap-2 mt-4">
                 <Button
@@ -287,12 +268,6 @@ const MyCulturesTab = ({ crops, addCrop, removeCrop }: MyCulturesTabProps) => {
                       <Leaf className="mr-2 h-4 w-4" /> Analisar com IA
                     </>
                   )}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => handleViewReviews(crop.id)}
-                >
-                  <FileText className="mr-2 h-4 w-4" /> Ver Análises
                 </Button>
                 {analysisResult && analysisResult.safraId === crop.id && (
                   <div className="mt-2 text-sm text-green-600">

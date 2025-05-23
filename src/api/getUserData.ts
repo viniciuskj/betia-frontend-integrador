@@ -1,8 +1,8 @@
 import api from './api';
 
-const getUserById = async () => {
+const getUserData = async () => {
   try {
-    const response = await api.get('/users');
+    const response = await api.get(`/users`);
 
     return {
       success: true,
@@ -19,4 +19,4 @@ const getUserById = async () => {
   }
 };
 
-export default getUserById;
+export default getUserData;

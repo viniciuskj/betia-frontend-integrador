@@ -8,14 +8,17 @@ import {
   Home,
 } from 'lucide-react';
 import { UserInfo } from '@/components/dashboard/UserInfo';
-
+/* type */
+import type { UserData } from '@/types';
 interface MobileNavProps {
   selectedTab: string;
   setSelectedTab: (tab: string) => void;
+  userData: UserData | null;
 }
 export default function DashboardSidebar({
   selectedTab,
   setSelectedTab,
+  userData,
 }: MobileNavProps) {
   const navItems = [
     {
@@ -69,7 +72,7 @@ export default function DashboardSidebar({
           </button>
         ))}
       </nav>
-      <UserInfo />
+      <UserInfo userData={userData} />
     </div>
   );
 }

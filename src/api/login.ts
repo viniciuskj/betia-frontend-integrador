@@ -1,4 +1,4 @@
-import api from './axios';
+import api from './api';
 import Cookies from 'js-cookie';
 
 const TOKEN_EXPIRES_IN = 1; // dias ate expirar
@@ -10,7 +10,7 @@ const TOKEN_EXPIRES_IN = 1; // dias ate expirar
  * @returns {Promise} - Retorna os dados do usuário em caso de sucesso
  */
 
-const login = async (email, password) => {
+const login = async (email: string, password: string) => {
   try {
     const response = await api.post('/login', { email, password });
 
@@ -24,7 +24,7 @@ const login = async (email, password) => {
       success: true,
       data: response.data,
     };
-  } catch (error) {
+  } catch (error: any) {
     // console.error('Erro ao fazer login:', error);
 
     return {

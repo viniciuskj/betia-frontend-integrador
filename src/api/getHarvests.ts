@@ -1,11 +1,11 @@
-import api from './axios';
+import api from './api';
 
 /**
 // Realiza um get
  * @returns {Promise} - Retorna os dados do usuário em caso de sucesso
  */
 
-const getHarvests = async (id) => {
+const getHarvests = async (id: number) => {
   try {
     const response = await api.get(`/users/${id}/harvests`);
 

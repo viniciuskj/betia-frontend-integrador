@@ -25,13 +25,13 @@ const Login = () => {
 
   const [formData, setFormData] = useState({
     email: '',
-    senha: '',
+    password: '',
     remember: false,
   });
 
   const [errors, setErrors] = useState({
     email: '',
-    senha: '',
+    password: '',
   });
 
   const validateEmail = email => {
@@ -50,7 +50,7 @@ const Login = () => {
   const validate = () => {
     const newErrors = {
       email: '',
-      senha: '',
+      password: '',
     };
 
     if (!formData.email) {
@@ -59,50 +59,52 @@ const Login = () => {
       newErrors.email = 'Formato de e-mail inválido';
     }
 
-    if (!formData.senha) {
-      newErrors.senha = 'Senha é obrigatória';
-    } else if (formData.senha.length < 6) {
-      newErrors.senha = 'A senha deve ter pelo menos 6 caracteres';
+    if (!formData.password) {
+      newErrors.password = 'password é obrigatória';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'A password deve ter pelo menos 6 caracteres';
     }
 
     setErrors(newErrors);
-    return !newErrors.email && !newErrors.senha;
+    return !newErrors.email && !newErrors.password;
   };
 
   const handleSubmit = async e => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!validate()) {
-    return;
-  }
-
-  setIsLoading(true);
-
-  try {
-  //  console.log('Dados do formulário:', formData);
-
-    const result = await login(formData.email, formData.password);
-
-    if (result.success) {
-      toast.success(
-        'Login realizado com sucesso! Redirecionando para o dashboard...'
-      );
-
-      // Redirecionar para o dashboard
-      setTimeout(() => {
-        navigate('/admin');
-      }, 1000);
-    } else {
-      toast.error(result.message || 'Erro ao fazer login. Verifique suas credenciais e tente novamente.');
+    if (!validate()) {
+      return;
     }
 
-  } catch (error) {
-    // console.error('Erro ao fazer login:', error);
-    toast.error('Erro inesperado. Tente novamente.');
-  } finally {
-    setIsLoading(false);
-  }
-};
+    setIsLoading(true);
+
+    try {
+      //  console.log('Dados do formulário:', formData);
+
+      const result = await login(formData.email, formData.password);
+
+      if (result.success) {
+        toast.success(
+          'Login realizado com sucesso! Redirecionando para o dashboard...'
+        );
+
+        // Redirecionar para o dashboard
+        setTimeout(() => {
+          navigate('/admin');
+        }, 1000);
+      } else {
+        toast.error(
+          result.message ||
+            'Erro ao fazer login. Verifique suas credenciais e tente novamente.'
+        );
+      }
+    } catch (error) {
+      // console.error('Erro ao fazer login:', error);
+      toast.error('Erro inesperado. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -179,17 +181,17 @@ const Login = () => {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="senha">Senha</Label>
+                  <Label htmlFor="password">Senha</Label>
                   <div className="relative">
                     <Input
-                      id="senha"
-                      name="senha"
+                      id="password"
+                      name="password"
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="Digite sua senha"
-                      value={formData.senha}
+                      placeholder="Digite sua password"
+                      value={formData.password}
                       onChange={handleChange}
                       className={
-                        errors.senha ? 'border-red-500 pr-10' : 'pr-10'
+                        errors.password ? 'border-red-500 pr-10' : 'pr-10'
                       }
                     />
                     <button
@@ -200,8 +202,10 @@ const Login = () => {
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
-                  {errors.senha && (
-                    <p className="text-red-500 text-sm mt-1">{errors.senha}</p>
+                  {errors.password && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.password}
+                    </p>
                   )}
                 </div>
                 <div className="flex justify-between items-center">
@@ -219,10 +223,10 @@ const Login = () => {
                     </Label>
                   </div>
                   <a
-                    href="/recuperar-senha"
+                    href="/recuperar-password"
                     className="text-sm text-betia-green hover:underline"
                   >
-                    Esqueceu sua senha?
+                    Esqueceu sua password?
                   </a>
                 </div>
                 <Button

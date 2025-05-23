@@ -8,11 +8,11 @@ import ClimateTab from '@/components/dashboard/tabs/ClimateTab';
 import ReportsTab from '@/components/dashboard/tabs/ReportsTab';
 import MobileNav from '@/components/dashboard/MobileNav';
 //api
-import getHarvests from '@/api/getHarvests'
-
+import getHarvests from '@/api/getHarvests';
+import getUserData from '@/api/getUserData';
 
 /* types */
-import type { Crop, CultureForecast } from '@/types';
+import type { Crop, CultureForecast, UserData } from '@/types';
 /* dados temporarios onde voce pode se basear para fazer a api */
 import {
   initialCrops,
@@ -26,24 +26,38 @@ import {
 
 const Dashboard = () => {
   const [selectedTab, setSelectedTab] = useState('dashboard');
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [crops, setCrops] = useState<Crop[]>(initialCrops);
   const [forecastsByCulture, setForecastsByCulture] = useState<CultureForecast>(
     forecastByCultureData
   );
 
   useEffect(() => {
-    try {
-      const result = getHarvests()
+    const fetchData = async () => {
+      try {
+        const userResult: any = await getUserData();
+        console.log('User data:', userResult);
 
-      console.log(result)
+        // userResult.data é um array, então pega o primeiro item
+        const user = userResult.data?.[0];
 
-      setCrops(result)
-    } catch (error) {
-      console.log(error)
-    }
-    /* fazer chamadas da api aqui para assim que abrir a tela admin primeira vez pegar os dados e setar dentro dos states */
-    setForecastsByCulture(forecastByCultureData);
-    console.log('abri tela de login');
+        if (user) {
+          setUserData(user); // Seta o primeiro usuário do array
+
+          // Usa o user diretamente (não userData que ainda não foi setado)
+          const harvestsResult = await getHarvests(user.id);
+          console.log('Harvests data:', harvestsResult);
+          // setHarvests(harvestsResult);
+        } else {
+          console.error('Nenhum usuário encontrado na resposta');
+        }
+      } catch (error) {
+        console.error('Erro ao buscar dados:', error);
+        // toast.error('Erro ao carregar dados');
+      }
+    };
+
+    fetchData();
   }, []);
 
   const addCrop = (newCrop: Omit<Crop, 'id'>) => {
@@ -109,9 +123,14 @@ const Dashboard = () => {
       <DashboardSidebar
         selectedTab={selectedTab}
         setSelectedTab={setSelectedTab}
+        userData={userData}
       />
       {/* mobile nav */}
-      <MobileNav selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
+      <MobileNav
+        selectedTab={selectedTab}
+        setSelectedTab={setSelectedTab}
+        userData={userData}
+      />
       <section className="overflow-x-hidden flex-1">{renderContent()}</section>
     </main>
   );
