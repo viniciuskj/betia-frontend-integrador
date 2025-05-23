@@ -28,7 +28,7 @@ const MyCulturesTab = ({
   addCrop,
   handleDeleteHarvest,
 }: MyCulturesTabProps) => {
-  console.log('SOU EU ', harvests);
+  // console.log('SOU EU ', harvests);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [newCrop, setNewCrop] = useState({
     name: '',

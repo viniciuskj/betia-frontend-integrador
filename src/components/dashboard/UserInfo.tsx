@@ -13,7 +13,7 @@ interface UserInfoProps {
 export function UserInfo({ userData }: UserInfoProps) {
   const navigate = useNavigate();
 
-  console.log('User Data:123', userData);
+  // console.log('User Data:123', userData);
 
   const handleLogout = () => {
     Cookies.remove('token');

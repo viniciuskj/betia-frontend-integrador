@@ -236,7 +236,7 @@ const Register = () => {
     e.preventDefault();
 
     if (validateStep1()) {
-      console.log('Dados da etapa 1:', formDataStep1);
+      // console.log('Dados da etapa 1:', formDataStep1);
       setStep(2);
     }
   };
@@ -264,7 +264,7 @@ const Register = () => {
           },
         };
 
-        console.log('Dados completos para registro:', userData);
+        // console.log('Dados completos para registro:', userData);
 
         const result = await register(userData);
 

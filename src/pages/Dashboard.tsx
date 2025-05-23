@@ -40,7 +40,7 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const userResult: any = await getUserById();
-        console.log('User data:', userResult);
+        // console.log('User data:', userResult);
 
         const user = userResult.data;
 
@@ -48,7 +48,7 @@ const Dashboard = () => {
           setUserData(user);
 
           const harvestsResult = await getHarvests();
-          console.log('Harvests data:', harvestsResult);
+          // console.log('Harvests data:', harvestsResult);
           setHarvests(harvestsResult.data);
         } else {
           console.error('Nenhum usuário encontrado na resposta');
@@ -108,10 +108,7 @@ const Dashboard = () => {
         );
       case 'relatorios':
         return (
-          <ReportsTab
-            CropAndCultureMonitorData={CropAndCultureMonitorData}
-            setSelectedTab={setSelectedTab}
-          />
+          <ReportsTab harvests={harvests} setSelectedTab={setSelectedTab} />
         );
       case 'planos':
         return <PlansTab userData={userData} setUserData={setUserData} />;

@@ -161,7 +161,7 @@ const NewAnalysis = ({ crops, setSelectedTab }: NewAnalysisProps) => {
       };
 
       // Log dos dados que serão enviados
-      console.log('Preparando para enviar análise:', submitData);
+      // console.log('Preparando para enviar análise:', submitData);
 
       // Preparar FormData para envio de arquivos
       const formData = new FormData();
