@@ -30,7 +30,7 @@ const login = async (email: string, password: string) => {
     return {
       success: false,
       message:
-        error.response?.data?.message || 'Erro desconhecido. Tente novamente.',
+        error.response?.data?.error || 'Erro desconhecido. Tente novamente.',
     };
   }
 };

@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -11,24 +9,28 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Leaf } from 'lucide-react';
 /* types */
-import type { Crop, Diagnostic } from '@/types';
+import type { Crop, Diagnostic, UserData, Harvest } from '@/types';
 
 interface DashboardHomeProps {
   crops: Crop[];
   setSelectedTab: (tab: string) => void;
   latestDiagnostics: Diagnostic[];
+  userData: UserData | null;
+  harvests: Harvest[];
 }
 
 export default function DashboardHome({
   crops,
   setSelectedTab,
   latestDiagnostics,
+  userData,
+  harvests,
 }: DashboardHomeProps) {
-  function handleViewDetails(id: string) {
+  function handleViewDetails(id: number) {
     console.log('View Details ID:', id);
   }
 
-  function handleDiagnosis(id: string) {
+  function handleDiagnosis(id: number) {
     console.log('Diagnosis ID:', id);
   }
 
@@ -36,7 +38,7 @@ export default function DashboardHome({
     <div className="p-4 md:p-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
         <div>
-          <h1 className="text-2xl font-bold">Olá, João</h1>
+          <h1 className="text-2xl font-bold">Olá, {userData?.name}</h1>
           <p className="text-muted-foreground">Bem-vindo ao seu dashboard</p>
         </div>
         <div className="mt-4 md:mt-0 flex gap-2">
@@ -59,13 +61,13 @@ export default function DashboardHome({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{crops.length}</div>
+            <div className="text-2xl font-bold">{harvests.length}</div>
             <p className="text-xs text-muted-foreground">
               +{crops.length - 1} no último mês
             </p>
           </CardContent>
         </Card>
-        <Card>
+        {/* <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">
               Diagnósticos Realizados
@@ -75,39 +77,13 @@ export default function DashboardHome({
             <div className="text-2xl font-bold">28</div>
             <p className="text-xs text-muted-foreground">+5 na última semana</p>
           </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Área Total</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {crops.reduce((total, crop) => total + parseInt(crop.area), 0)} ha
-            </div>
-            <p className="text-xs text-muted-foreground">
-              +10 ha no último mês
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">
-              Produtividade Média
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">3.2 ton/ha</div>
-            <p className="text-xs text-muted-foreground">
-              +0.3 ton/ha em relação ao ano anterior
-            </p>
-          </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       <Tabs defaultValue="culturas">
         <TabsList className="mb-4  overflow-x-scroll md:overflow-hidden">
           <TabsTrigger value="culturas">Minhas Culturas</TabsTrigger>
-          <TabsTrigger value="diagnosticos">Últimos Diagnósticos</TabsTrigger>
+          {/* <TabsTrigger value="diagnosticos">Últimos Diagnósticos</TabsTrigger> */}
         </TabsList>
 
         <TabsContent value="culturas">
@@ -119,24 +95,24 @@ export default function DashboardHome({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {crops.length > 0 ? (
+              {harvests.length > 0 ? (
                 <div className="space-y-4">
-                  {crops.map(crop => (
+                  {harvests.map(harvest => (
                     <div
-                      key={crop.id}
+                      key={harvest.id}
                       className="flex flex-col gap-y-4 md:flex-row justify-between items-center p-4 border rounded-lg"
                     >
                       <div>
-                        <h3 className="font-medium">{crop.name}</h3>
+                        <h3 className="font-medium">{harvest.title}</h3>
                         <p className="text-sm text-muted-foreground">
-                          Área: {crop.area} • Plantio: {crop.plantingDate}
+                          Plantio: {harvest.culture_type}
                         </p>
                       </div>
                       <div className="flex gap-2">
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleViewDetails(crop.id)}
+                          onClick={() => handleViewDetails(harvest.id)}
                         >
                           Ver Detalhes
                         </Button>
@@ -144,7 +120,7 @@ export default function DashboardHome({
                         <Button
                           className="bg-betia-green hover:bg-betia-green/90"
                           size="sm"
-                          onClick={() => handleDiagnosis(crop.id)}
+                          onClick={() => handleDiagnosis(harvest.id)}
                         >
                           Diagnóstico
                         </Button>
@@ -170,7 +146,7 @@ export default function DashboardHome({
           </Card>
         </TabsContent>
 
-        <TabsContent value="diagnosticos">
+        {/* <TabsContent value="diagnosticos">
           <Card>
             <CardHeader>
               <CardTitle>Diagnósticos Recentes</CardTitle>
@@ -221,7 +197,7 @@ export default function DashboardHome({
               )}
             </CardContent>
           </Card>
-        </TabsContent>
+        </TabsContent> */}
       </Tabs>
     </div>
   );

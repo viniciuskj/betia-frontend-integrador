@@ -246,14 +246,6 @@ export default function ReportsPage({
                           {selectedCrop.plantingDate}
                         </span>
                       </div>
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="text-muted-foreground">
-                          Imagens Analisadas:
-                        </span>
-                        <span className="font-medium">
-                          {currentAnalysis.images?.length || 0}
-                        </span>
-                      </div>
                     </div>
                   </div>
                   <div>

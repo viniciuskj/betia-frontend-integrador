@@ -12,7 +12,7 @@ import getHarvests from '@/api/getHarvests';
 import getUserData from '@/api/getUserData';
 
 /* types */
-import type { Crop, CultureForecast, UserData } from '@/types';
+import type { Crop, CultureForecast, UserData, Harvest } from '@/types';
 /* dados temporarios onde voce pode se basear para fazer a api */
 import {
   initialCrops,
@@ -31,6 +31,7 @@ const Dashboard = () => {
   const [forecastsByCulture, setForecastsByCulture] = useState<CultureForecast>(
     forecastByCultureData
   );
+  const [harvests, setHarvests] = useState<Harvest[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,7 +48,7 @@ const Dashboard = () => {
           // Usa o user diretamente (não userData que ainda não foi setado)
           const harvestsResult = await getHarvests(user.id);
           console.log('Harvests data:', harvestsResult);
-          // setHarvests(harvestsResult);
+          setHarvests(harvestsResult.data);
         } else {
           console.error('Nenhum usuário encontrado na resposta');
         }
@@ -110,7 +111,9 @@ const Dashboard = () => {
       default:
         return (
           <DashboardHome
+            harvests={harvests}
             crops={crops}
+            userData={userData}
             setSelectedTab={setSelectedTab}
             latestDiagnostics={diagnosticsData}
           />

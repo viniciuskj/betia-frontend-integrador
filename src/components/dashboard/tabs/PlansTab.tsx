@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Check, CreditCard, Download } from 'lucide-react';
+/* get plans */
 
 export default function PlansTab() {
   return (

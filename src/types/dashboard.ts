@@ -215,3 +215,18 @@ export interface CropAnalysis {
     recommendations: string[];
   };
 }
+
+/* novos types de acordo com a api */
+
+export type Harvest = {
+  id: number;
+  user_id: number;
+  title: string;
+  culture_type: string;
+  latitude: number;
+  longitude: number;
+  start_date: string; // ou date?
+  end_date: string;
+  created_at: string;
+  updated_at: string;
+};

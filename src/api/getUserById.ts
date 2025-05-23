@@ -1,8 +1,8 @@
 import api from './api';
 
-const getUserById = async () => {
+const getUserById = async (id: number) => {
   try {
-    const response = await api.get('/users');
+    const response = await api.get(`/users/${id}`);
 
     return {
       success: true,

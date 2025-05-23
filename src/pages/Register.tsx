@@ -274,7 +274,7 @@ const Register = () => {
           );
 
           setTimeout(() => {
-            navigate('/admin');
+            navigate('/login');
           }, 1000);
         } else {
           toast.error(
